@@ -12,7 +12,7 @@ import static com.example.master.GameView.screenRatioY;
 
 
 /* This class implement the object character.
-* Character can run, attack and jump */
+* Character can run, attack, jump and dead */
 
 
 public class Character {
@@ -20,15 +20,15 @@ public class Character {
 
     //instances variables
 
-    int attack = 0, run = 0, jump = 0;
-    int x, y, width, height, runCounter = 1, attackCounter, jumpCounter;
+    int attack = 0, run = 0, jump = 0, dead = 0;
+    int x, y, width, height, runCounter = 1, attackCounter, jumpCounter, deadCounter;
 
     boolean isJump = false, isDead = false;
 
     Bitmap run1, run2, run3, run4, run5, run6, run7, run8;
     Bitmap attack1, attack2, attack3, attack4, attack5, attack6, attack7, attack8, attack9, attack10;
     Bitmap jump1, jump2, jump3, jump4, jump5, jump6;
-    Bitmap dead1, dead2, dead3, dead4, dead5, dead6, dead7, dead8, dead9, dead10;
+    Bitmap dead1, dead2, dead3, dead4, dead5, dead6, dead7, dead8, dead9, dead10, dead11, dead12, dead13, dead14, dead15, dead16, dead17, dead18, dead19, dead20, dead21, dead22, dead23, dead24;
 
     private GameView gameView;
 
@@ -61,6 +61,7 @@ public class Character {
         attack9 = BitmapFactory.decodeResource(res, R.drawable.attack9);
         attack10 = BitmapFactory.decodeResource(res, R.drawable.attack10);
 
+        //get the image for the jump
         jump1 = BitmapFactory.decodeResource(res, R.drawable.jump1);
         jump2 = BitmapFactory.decodeResource(res, R.drawable.jump2);
         jump3 = BitmapFactory.decodeResource(res, R.drawable.jump3);
@@ -68,7 +69,7 @@ public class Character {
         jump5 = BitmapFactory.decodeResource(res, R.drawable.jump5);
         jump6 = BitmapFactory.decodeResource(res, R.drawable.jump6);
 
-
+        //get the image for the dead
         dead1 = BitmapFactory.decodeResource(res, R.drawable.dead1);
         dead2 = BitmapFactory.decodeResource(res, R.drawable.dead2);
         dead3 = BitmapFactory.decodeResource(res, R.drawable.dead3);
@@ -77,6 +78,20 @@ public class Character {
         dead6 = BitmapFactory.decodeResource(res, R.drawable.dead6);
         dead7 = BitmapFactory.decodeResource(res, R.drawable.dead7);
         dead8 = BitmapFactory.decodeResource(res, R.drawable.dead8);
+        dead9 = BitmapFactory.decodeResource(res, R.drawable.dead9);
+        dead10 = BitmapFactory.decodeResource(res, R.drawable.dead10);
+        dead11 = BitmapFactory.decodeResource(res, R.drawable.dead11);
+        dead12 = BitmapFactory.decodeResource(res, R.drawable.dead12);
+        dead13 = BitmapFactory.decodeResource(res, R.drawable.dead13);
+        dead14 = BitmapFactory.decodeResource(res, R.drawable.dead14);
+        dead15 = BitmapFactory.decodeResource(res, R.drawable.dead15);
+        dead16 = BitmapFactory.decodeResource(res, R.drawable.dead16);
+        dead17 = BitmapFactory.decodeResource(res, R.drawable.dead17);
+        dead18 = BitmapFactory.decodeResource(res, R.drawable.dead18);
+        dead19 = BitmapFactory.decodeResource(res, R.drawable.dead19);
+        dead20 = BitmapFactory.decodeResource(res, R.drawable.dead20);
+        dead21 = BitmapFactory.decodeResource(res, R.drawable.dead21);
+        dead22 = BitmapFactory.decodeResource(res, R.drawable.dead22);
 
 
 
@@ -90,12 +105,11 @@ public class Character {
         width *= 3;
         height *= 2;
 
-
+        //synchronize the width and the height with the background
         width = (int) (height * screenRatioX);
         height = (int) (width * screenRatioY);
 
         //give the same width and the same height for all the image
-
         run1 = Bitmap.createScaledBitmap(run1, width, height, false);
         run2 = Bitmap.createScaledBitmap(run2, width, height, false);
         run3 = Bitmap.createScaledBitmap(run3, width, height, false);
@@ -130,6 +144,20 @@ public class Character {
         dead5 = Bitmap.createScaledBitmap(dead5, width, height, false);
         dead6 = Bitmap.createScaledBitmap(dead6, width, height, false);
         dead7 = Bitmap.createScaledBitmap(dead7, width, height, false);
+        dead8 = Bitmap.createScaledBitmap(dead8, width, height, false);
+        dead9 = Bitmap.createScaledBitmap(dead9, width, height, false);
+        dead10 = Bitmap.createScaledBitmap(dead10, width, height, false);
+        dead11 = Bitmap.createScaledBitmap(dead11, width, height, false);
+        dead12 = Bitmap.createScaledBitmap(dead12, width, height, false);
+        dead13 = Bitmap.createScaledBitmap(dead13, width, height, false);
+        dead14 = Bitmap.createScaledBitmap(dead14, width, height, false);
+        dead15 = Bitmap.createScaledBitmap(dead15, width, height, false);
+        dead16 = Bitmap.createScaledBitmap(dead16, width, height, false);
+        dead17 = Bitmap.createScaledBitmap(dead17, width, height, false);
+        dead18 = Bitmap.createScaledBitmap(dead18, width, height, false);
+        dead19 = Bitmap.createScaledBitmap(dead19, width, height, false);
+        dead20 = Bitmap.createScaledBitmap(dead20, width, height, false);
+        dead21 = Bitmap.createScaledBitmap(dead21, width, height, false);
 
 
 
@@ -141,9 +169,96 @@ public class Character {
 
     }
 
-    //make the character run, attack and jump.
+    //make the character run, attack, jump and dead.
     /*@return: the bitmap*/
     public Bitmap getRun() {
+
+        if(dead != 0) {
+            run = 1;
+            if(deadCounter == 1) {
+                deadCounter++;
+                return dead1;
+            }
+            if(deadCounter == 2) {
+                deadCounter++;
+                return dead2;
+            }
+            if(deadCounter == 3) {
+                deadCounter++;
+                return dead3;
+            }
+            if(deadCounter == 4) {
+                deadCounter++;
+                return dead4;
+            }
+            if(deadCounter == 5) {
+                deadCounter++;
+                return dead5;
+            }
+            if(deadCounter == 6) {
+                deadCounter++;
+                return dead6;
+            }
+            if(deadCounter == 7) {
+                deadCounter++;
+                return dead7;
+            }
+            if(deadCounter == 8) {
+                deadCounter++;
+                return dead8;
+            }
+            if(deadCounter == 9) {
+                deadCounter++;
+                return dead9;
+            }
+            if(deadCounter == 10) {
+                deadCounter++;
+                return dead10;
+            }
+            if(deadCounter == 11 ) {
+                deadCounter++;
+                return dead11;
+            }
+            if(deadCounter == 12 ) {
+                deadCounter++;
+                return dead12;
+            }
+            if(deadCounter == 13 ) {
+                deadCounter++;
+                return dead13;
+            }
+            if(deadCounter == 14 ) {
+                deadCounter++;
+                return dead14;
+            }
+            if(deadCounter == 15 ) {
+                deadCounter++;
+                return dead15;
+            }
+            if(deadCounter == 16 ) {
+                deadCounter++;
+                return dead16;
+            }
+            if(deadCounter == 17 ) {
+                deadCounter++;
+                return dead17;
+            }
+            if(deadCounter == 18 ) {
+                deadCounter++;
+                return dead18;
+            }
+            if(deadCounter == 19 ) {
+                deadCounter++;
+                return dead19;
+            }
+            if(deadCounter == 20 ) {
+                deadCounter++;
+                return dead20;
+            }
+            isDead = true;
+            return dead21;
+
+        }
 
         if(jump != 0 ) {
             if(jumpCounter == 1 ) {
@@ -168,6 +283,7 @@ public class Character {
             }
             jumpCounter = 1;
             jump--;
+            isJump = false;
             return jump6;
         }
 
@@ -212,7 +328,7 @@ public class Character {
 
             attackCounter = 1;
             attack--;
-            gameView.newArrow();
+            gameView.newArrow(); //create a new arrow
             return attack10;
 
         }
@@ -257,5 +373,14 @@ public class Character {
 
     }
 
+    /* check a collision with the character object
+     @return : Rect */
+
+    public Rect getCollision() {
+
+        Rect collision = new Rect(x, y + 400, x + width -480, y + height);
+
+        return collision;
+    }
 
 }

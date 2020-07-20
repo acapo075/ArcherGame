@@ -21,7 +21,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
     // the play button
     private ImageButton buttonPlay;
 
@@ -54,6 +54,14 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        buttonScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, HighScore.class));
+            }
+        });
+
 
     }
 }
+

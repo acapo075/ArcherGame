@@ -22,5 +22,9 @@
             android:name=".GameActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.noActionBar"/>
+        <activity
+            android:name=".HighScore"
+            android:theme="@style/AppTheme.noActionBar"
+            android:screenOrientation="landscape"/>
     </application>
 </manifest>
