@@ -4,21 +4,18 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.view.Display;
+
 import android.view.SurfaceView;
-import android.content.Context;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
-import android.graphics.Color;
+
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.os.Build;
+
 import android.view.MotionEvent;
-import android.view.SurfaceView;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +26,12 @@ public class GameView extends SurfaceView implements Runnable {
     //instances variables
 
     private boolean isPlaying, isGameOver;
+    private boolean isGolem, isWitch;
 
 
     private int screenX, screenY;
-    private int i = 0, score;
+    private int i = 0, j = 0, score, time;
+    private int maxArrow, arrowCounter;
 
     private int highScore[] = new int[4];
 
@@ -42,7 +41,6 @@ public class GameView extends SurfaceView implements Runnable {
     private Paint paint;
     private Background background1, background2;
     private Character character;
-    private Golem golem;
     private SharedPreferences sharedPreferences;
     private Context context;
     private Resources resources;
@@ -50,8 +48,14 @@ public class GameView extends SurfaceView implements Runnable {
 
     private Bitmap gameOver;
 
+    private Golem golems[];
+    private Witch witchs[];
+
 
     private List<Arrow> arrows;
+    private List<Bonus> bonuses;
+
+    private Random generator;
 
 
 
@@ -59,7 +63,6 @@ public class GameView extends SurfaceView implements Runnable {
 
     //constructor
      public GameView(GameActivity gameActivity, int screenX, int screenY) {
-
 
 
         super(gameActivity);
@@ -84,13 +87,25 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
 
         character = new Character(this, screenY, getResources());
-        golem = new Golem(this, screenX, screenY, getResources());
 
         arrows = new ArrayList<>();
+
+        maxArrow = 10;
 
         sharedPreferences = gameActivity.getSharedPreferences("game", Context.MODE_PRIVATE);
 
         score = 0;
+        time = 0;
+
+        bonuses = new ArrayList<>();
+
+        golems = new Golem[5];
+        witchs = new Witch[5];
+
+        for(int i = 0; i < 5; i++) {
+            golems[i] =  new Golem(this, screenX, screenY, getResources());
+            witchs[i] = new Witch(this, screenX, screenY, getResources());
+        }
 
 
 
@@ -100,6 +115,13 @@ public class GameView extends SurfaceView implements Runnable {
         highScore[3] = sharedPreferences.getInt("score4",0);
 
         gameOver = BitmapFactory.decodeResource(resources, R.drawable.gameover);
+
+
+        generator = new Random();
+
+       
+
+
 
 
     }
@@ -123,6 +145,10 @@ public class GameView extends SurfaceView implements Runnable {
 
     //update the game
     private void update() {
+
+         //incremente the time
+         time++;
+
         background1.x -= 30 * screenRatioX;
         background2.x -= 30 * screenRatioX;
 
@@ -138,18 +164,12 @@ public class GameView extends SurfaceView implements Runnable {
             character.y = 0;
         }
 
-        if(golem.y < 0) {
-            golem.y = 0;
-        }
 
         if (character.y >= screenY - character.height) {
             character.y = screenY - character.height - 20;
             i = 0;
         }
 
-        if(golem.y >= screenY - golem.height) {
-            golem.y = screenY - golem.height - 75;
-        }
 
         if(character.isJump) {
             character.y -= 100 * screenRatioY;
@@ -157,15 +177,73 @@ public class GameView extends SurfaceView implements Runnable {
             character.y += 30 * screenRatioY;
         }
 
-
         if (character.y == screenY - character.height - 20) {
             i = 0;
         }
 
-        //let the golem go foward
-        golem.x -= 20;
+       List<Bonus> del = new ArrayList<>();
+
+        if(time%40 == 0 ) {
+            newBonus();
+        }
+
+        for(Bonus bonus : bonuses ) {
+
+            bonus.x -= 30 * screenRatioX;
+
+
+            if(Rect.intersects(bonus.getCollision(), character.getCollision())) {
+
+                arrowCounter--;
+                bonus.x = screenX + 900;
+            }
+
+            if(bonus.x > screenX ) {
+                del.add(bonus);
+            }
+        }
+
+
 
         List<Arrow> delete = new ArrayList<>();
+
+        for(Golem golem : golems ) {
+            if(golem.y >= screenY - golem.height) {
+                golem.y = screenY - golem.height - 75;
+            }
+
+            if(golem.y < 0) {
+                golem.y = 0;
+            }
+            golem.x -= 10;
+
+            if(Rect.intersects(golem.getCollision(), character.getCollision()) ) {
+
+                character.dead = 1;
+                isGameOver = true;
+                return;
+
+            }
+        }
+
+        for( Witch witch : witchs ) {
+            witch.x -= 20;
+
+            if(witch.y < 0 ) {
+                witch.y = 0;
+            }
+
+            if(witch.y >= screenY - witch.height) {
+                witch.y = screenY - witch.height - 100;
+            }
+            if (Rect.intersects(witch.getCollision(), character.getCollision())) {
+
+                character.dead = 1;
+                isGameOver = true;
+                return;
+            }
+        }
+
 
         for (Arrow arrow : arrows) {
 
@@ -175,30 +253,44 @@ public class GameView extends SurfaceView implements Runnable {
 
             arrow.setX((int) (arrow.getX() + 55 * screenRatioX));
 
-            if (Rect.intersects(arrow.getCollision(), golem.getCollision())) {
-                score++;
-                golem.isShoot = true;
-                arrow.setX(screenX + 900);
-                golem.x = screenX + 900;
+            for(Golem golem : golems ) {
 
+                if (Rect.intersects(arrow.getCollision(), golem.getCollision())) {
+                    score++;
+                    golem.isShoot = true;
+                    golem.isDead = true;
+                    arrow.setX(screenX + 900);
+                    golem.x = screenX + generator.nextInt(1800) + 900 ;
+                    isGolem = false;
+                    j++;
+
+                }
             }
+
+            for(Witch witch : witchs ) {
+
+                if(Rect.intersects(arrow.getCollision(), witch.getCollision())) {
+                    score++;
+                    witch.isShoot = true;
+                    witch.isDead = true;
+                    arrow.setX(screenX + 900);
+                    witch.x = screenX + generator.nextInt(1800) + 900;
+                    isWitch = false;
+                    j--;
+                }
+            }
+
+
         }
 
-        for (Arrow arrow : delete)
+        for (Arrow arrow : delete) {
             arrows.remove(arrow);
-
-        if(Rect.intersects(golem.getCollision(), character.getCollision())) {
-
-            character.dead = 1;
-            isGameOver = true;
-            return;
-
-
         }
 
-
-
+        for(Bonus bonus : del) {
+            bonuses.remove(bonus);
         }
+     }
 
 
 
@@ -211,12 +303,17 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawBitmap(background1.background, background1.x, background1.y, paint);
             canvas.drawBitmap(background2.background, background2.x, background2.y, paint);
 
+            if(!isGameOver) {
 
-            int yPos=(int) ((canvas.getHeight()) - ((paint.descent() + paint.ascent())));
-            paint.setTextSize(150);
-            paint.setTextAlign(Paint.Align.CENTER);
+                int yPos=(int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 3));
+                paint.setTextSize(150);
+                paint.setTextAlign(Paint.Align.LEFT);
 
-            canvas.drawText(score + "", canvas.getWidth()/2,yPos,paint);
+                canvas.drawText("Score: " +score + "", canvas.getWidth()/2,yPos,paint);
+            }
+
+
+
 
 
             canvas.drawBitmap(character.getRun(), character.x, character.y, paint);
@@ -225,14 +322,31 @@ public class GameView extends SurfaceView implements Runnable {
                 canvas.drawBitmap(arrow.arrow, arrow.getX(), arrow.getY(), paint);
             }
 
+            for (Bonus bonus : bonuses) {
+                canvas.drawBitmap(bonus.arrow, bonus.x, bonus.y, paint);
+            }
 
-            canvas.drawBitmap(golem.getRun(), golem.x, golem.y, paint);
+            for(Golem golem : golems ) {
+
+                canvas.drawBitmap(golem.getRun(), golem.x, golem.y, paint);
+            }
+
+            for(Witch witch : witchs ) {
+
+                canvas.drawBitmap(witch.getRun(), witch.x, witch.y, paint);
+            }
+
 
             if(isGameOver) {
 
+                int y=(int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 3));
+                paint.setTextSize(250);
+                paint.setTextAlign(Paint.Align.CENTER);
+
+                canvas.drawText("GAME OVER" , canvas.getWidth()/2,y,paint);
 
                 isPlaying = false;
-                waitBeforeExiting();
+                exiting();
                 saveHighScore();
 
             }
@@ -288,31 +402,34 @@ public class GameView extends SurfaceView implements Runnable {
 
     public void saveHighScore() {
 
-        for(int i = 0; i < 4; i++) {
+        for(int i = 3; i >= 0; i--) {
 
-            if (highScore[i] < score) {
+            if (highScore[i] < score ) {
 
-                final int finalI = i;
                 highScore[i] = score;
+                break;
 
             }
         }
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        for(int i = 0; i<4; i++) {
-            int j = i + 1;
-            editor.putInt("score"+j, highScore[i]);
+
+        for(int i = 0; i < 4; i++) {
+
+            editor.putInt("score"+ (i+1), highScore[i]);
         }
+
+
         editor.apply();
 
 
         }
 
-    private void waitBeforeExiting() {
+    private void exiting() {
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
             gameActivity.startActivity(new Intent(gameActivity, MainActivity.class));
             gameActivity.finish();
         } catch (InterruptedException e) {
@@ -326,11 +443,28 @@ public class GameView extends SurfaceView implements Runnable {
     //create a new arrow to display
     public void newArrow() {
 
-        Arrow arrow = new Arrow((getResources()));
+         if(arrowCounter <= maxArrow ) {
 
-        arrow.setX(character.x + (character.width / 2 ));
-        arrow.setY(character.y + (character.height / 3));
-        arrows.add(arrow);
+             arrowCounter++;
+
+            Arrow arrow = new Arrow((getResources()));
+
+             arrow.setX(character.x + (character.width / 2 ));
+             arrow.setY(character.y + (character.height / 3));
+
+             arrows.add(arrow);
+
+
+
+         }
+
+    }
+
+    public void newBonus() {
+
+         Bonus bonus = new Bonus(screenX, screenY, getResources());
+
+         bonuses.add(bonus);
 
     }
 }

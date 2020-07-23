@@ -26,5 +26,9 @@
             android:name=".HighScore"
             android:theme="@style/AppTheme.noActionBar"
             android:screenOrientation="landscape"/>
+        <activity
+            android:name=".About"
+            android:theme="@style/AppTheme.noActionBar"
+            android:screenOrientation="landscape"/>
     </application>
 </manifest>

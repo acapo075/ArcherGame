@@ -4,11 +4,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import java.util.Random;
 
 import static com.example.master.GameView.screenRatioX;
 import static com.example.master.GameView.screenRatioY;
 
-public class Golem {
+public class Golem  {
 
     //instances variables
 
@@ -24,11 +25,18 @@ public class Golem {
 
     GameView gameView;
 
+    Random generator;
+
+
     //constructor
 
     public Golem(GameView gameView, int screenX, int screenY, Resources res) {
+        super();
 
         this.gameView = gameView;
+
+        generator = new Random();
+
 
         run1 = BitmapFactory.decodeResource(res, R.drawable.golemrun1);
         run2 = BitmapFactory.decodeResource(res, R.drawable.golemrun2);
@@ -74,8 +82,9 @@ public class Golem {
 //        dead6 = Bitmap.createScaledBitmap(dead6, width, height, false);
 //        dead7 = Bitmap.createScaledBitmap(dead7, width, height, false);
 
+        //give a random coordinates for the golem
         y = screenY;
-        x = screenX;
+        x = generator.nextInt(screenX) + 1000;
 
 
     }

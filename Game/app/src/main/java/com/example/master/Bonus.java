@@ -1,4 +1,3 @@
-/* @author : Anastasia Alexia Capo-chichi  */
 package com.example.master;
 
 import android.content.res.Resources;
@@ -6,52 +5,26 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import java.util.Random;
+
 import static com.example.master.GameView.screenRatioX;
 import static com.example.master.GameView.screenRatioY;
 
-public class Arrow {
+public class Bonus {
 
-    //instances variables
+    int height, width;
+    int x, y;
 
-    private int x, y, width, height;
 
     Bitmap arrow;
 
-    //getters
 
-    public int getX() {
-        return x;
-    }
+    Random generator;
 
-    public int getY() {
-
-        return y;
-    }
-    public int getWidth() {
-
-        return width;
-    }
-    public int getHeight() {
-
-        return height;
-    }
+    public Bonus(int screenX, int screenY, Resources resources) {
 
 
-    //setters
-
-    public int setX(int nx) {
-        x = nx;
-        return x;
-    }
-    public int setY(int ny) {
-        y = ny;
-        return y;
-    }
-
-
-
-    //constructor
-   public Arrow(Resources resources) {
+        generator = new Random();
 
         arrow = BitmapFactory.decodeResource(resources, R.drawable.arrow1);
 
@@ -65,14 +38,14 @@ public class Arrow {
         height = (int) (width * screenRatioY);
 
         arrow = Bitmap.createScaledBitmap(arrow, width, height, false);
+
+        x = generator.nextInt(screenX);
+        y = generator.nextInt(screenY);
     }
 
-
-
-    //if the arrow touch something
     public Rect getCollision() {
 
-       Rect collision = new Rect(x, y, x + width, y + height);
+        Rect collision = new Rect(x, y, x + width, y + height);
 
         return collision;
     }

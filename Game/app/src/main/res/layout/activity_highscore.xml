@@ -8,7 +8,7 @@
     android:paddingTop="150dp"
     android:orientation="vertical"
     tools:context=".HighScore"
-    android:background="@drawable/background">
+    android:background="@drawable/background2">
 
     <TextView
 

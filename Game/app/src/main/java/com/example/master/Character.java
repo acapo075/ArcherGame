@@ -163,7 +163,7 @@ public class Character {
 
 
 
-        //give a coordinates for character
+        //give coordinates for character
         y = screenY;
         x = (int) (screenRatioX / 100);
 
@@ -378,7 +378,7 @@ public class Character {
 
     public Rect getCollision() {
 
-        Rect collision = new Rect(x, y + 400, x + width -480, y + height);
+        Rect collision = new Rect(x, y, x + width -480, y + height);
 
         return collision;
     }

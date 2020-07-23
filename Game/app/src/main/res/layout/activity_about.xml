@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:paddingTop="150dp"
+    android:orientation="vertical"
+    android:background="@drawable/background2">
+
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="722dp"
+        android:layout_height="261dp"
+        android:text="
+Bow is the chosen one.
+Today he goes on the quest of his life. He runs, runs and runs, since his wife and son lost their lives.
+He runs, runs, runs, without final destination.
+He decided to avenge these family at all costs.
+In his look, there is only hatred and in his heart, only pain.
+No matter how many arrows he shoots, no matter how many yards he covers, nothing will be able to appease his pain.
+Nothing except the blood of all the demons in the kingdom.
+Even if he has to get lost in the void of the forest of nightmares.
+He is ready for everything.
+You are ready for anything."
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+
+</LinearLayout>
