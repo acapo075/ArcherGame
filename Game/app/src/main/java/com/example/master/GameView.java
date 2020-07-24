@@ -30,7 +30,7 @@ public class GameView extends SurfaceView implements Runnable {
 
 
     private int screenX, screenY;
-    private int i = 0, j = 0, score, time;
+    private int i = 0, score, time;
     private int maxArrow, arrowCounter;
 
     private int highScore[] = new int[4];
@@ -51,13 +51,10 @@ public class GameView extends SurfaceView implements Runnable {
     private Golem golems[];
     private Witch witchs[];
 
-
     private List<Arrow> arrows;
     private List<Bonus> bonuses;
 
     private Random generator;
-
-
 
 
 
@@ -91,6 +88,7 @@ public class GameView extends SurfaceView implements Runnable {
         arrows = new ArrayList<>();
 
         maxArrow = 10;
+        arrowCounter = 10;
 
         sharedPreferences = gameActivity.getSharedPreferences("game", Context.MODE_PRIVATE);
 
@@ -146,7 +144,7 @@ public class GameView extends SurfaceView implements Runnable {
     //update the game
     private void update() {
 
-         //incremente the time
+         //increamente the time
          time++;
 
         background1.x -= 30 * screenRatioX;
@@ -194,7 +192,7 @@ public class GameView extends SurfaceView implements Runnable {
 
             if(Rect.intersects(bonus.getCollision(), character.getCollision())) {
 
-                arrowCounter--;
+                arrowCounter++;
                 bonus.x = screenX + 900;
             }
 
@@ -262,7 +260,6 @@ public class GameView extends SurfaceView implements Runnable {
                     arrow.setX(screenX + 900);
                     golem.x = screenX + generator.nextInt(1800) + 900 ;
                     isGolem = false;
-                    j++;
 
                 }
             }
@@ -276,7 +273,6 @@ public class GameView extends SurfaceView implements Runnable {
                     arrow.setX(screenX + 900);
                     witch.x = screenX + generator.nextInt(1800) + 900;
                     isWitch = false;
-                    j--;
                 }
             }
 
@@ -310,10 +306,10 @@ public class GameView extends SurfaceView implements Runnable {
                 paint.setTextAlign(Paint.Align.LEFT);
 
                 canvas.drawText("Score: " +score + "", canvas.getWidth()/2,yPos,paint);
+
+                paint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText("Arrow: " + arrowCounter + " ", canvas.getWidth() / 2, yPos, paint);
             }
-
-
-
 
 
             canvas.drawBitmap(character.getRun(), character.x, character.y, paint);
@@ -374,19 +370,22 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
-    //
+    //on click
     public boolean onTouchEvent(MotionEvent event) {
 
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_UP:
-                if (event.getX() > screenX / 2) {
-                    character.attack++;
-                    break;
+                if(arrowCounter > 0 ) {
+                    if (event.getX() > screenX / 2 ) { //if the user touch the screen on the right
+                        character.attack++;
+                        break;
+                    }
                 }
+
             case MotionEvent.ACTION_DOWN :
                 if(i < 2) {
-                    if (event.getX() < screenX / 2) {
+                    if (event.getX() < screenX / 2) { //if the user touch the screen on the left
                         character.jump++;
                         character.isJump = true;
                         i++;
@@ -400,6 +399,9 @@ public class GameView extends SurfaceView implements Runnable {
 
     }
 
+
+
+    //save the high score
     public void saveHighScore() {
 
         for(int i = 3; i >= 0; i--) {
@@ -410,6 +412,7 @@ public class GameView extends SurfaceView implements Runnable {
                 break;
 
             }
+
         }
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -426,6 +429,7 @@ public class GameView extends SurfaceView implements Runnable {
 
         }
 
+        //go back to the main screen view
     private void exiting() {
 
         try {
@@ -443,9 +447,9 @@ public class GameView extends SurfaceView implements Runnable {
     //create a new arrow to display
     public void newArrow() {
 
-         if(arrowCounter <= maxArrow ) {
+         if(arrowCounter != 0 ) {
 
-             arrowCounter++;
+             arrowCounter--;
 
             Arrow arrow = new Arrow((getResources()));
 
@@ -454,12 +458,12 @@ public class GameView extends SurfaceView implements Runnable {
 
              arrows.add(arrow);
 
-
-
          }
+
 
     }
 
+    //to create new bonus
     public void newBonus() {
 
          Bonus bonus = new Bonus(screenX, screenY, getResources());

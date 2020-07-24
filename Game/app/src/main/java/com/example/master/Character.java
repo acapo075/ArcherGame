@@ -378,7 +378,7 @@ public class Character {
 
     public Rect getCollision() {
 
-        Rect collision = new Rect(x, y, x + width -480, y + height);
+        Rect collision = new Rect(x, y, x + width -480, y + height - 205);
 
         return collision;
     }
